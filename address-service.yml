@@ -39,8 +39,8 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
 
-camel:
-    configFilePath: camel/camel-binding-config.xml
+#camel:
+#   configFilePath: camel/camel-binding-config.xml
 
 
 # Disable spring basic authentication security
@@ -91,7 +91,7 @@ camel:
 ---
 
 spring:
-  profiles: dev
+  profiles: standalone
   data:
     mongodb.host: localhost
     mongodb.port: 27017
@@ -117,5 +117,72 @@ eureka:
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
 
+camel:
+    configFilePath: camel/test-camel-binding-config.xml
+
+---
+
+spring:
+  profiles: test
+  data:
+    mongodb.host: localhost
+    mongodb.port: 27017
+    mongodb.uri: mongodb://localhost/pctl
+
+jwt:
+    tokenExpirationTime: 2592000 # Number of minutes
+    refreshTokenExpTime: 2592000 # Minutes
+    tokenIssuer: Ctl
+    tokenSigningKey: xm8EV6Hy5RMFK4EEACIDAwQus
+    publicKey: apiclient@ctl.com
+    header: Authorization
+    route:
+      authentication:
+        path: auth
+
+# EUREKA
+eureka:
+  instance:
+    hostname: localhost
+    port: 8081
+  client:
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
+
+camel:
+    configFilePath: camel/test-camel-binding-config.xml
+redis:
+    cacheHost: DS-FKXNWQ1 # Host name
+    cachePort: 6379 # port number
+    cacheExpiration: 300 #Seconds
+---
+# EMBEDDED SERVER CONFIGURATION
+spring:
+  profiles: ssl
+server:
+   # port: 8082
+    ssl:
+      enabled: true
+      key-store: classpath:keystore.p12
+      key-store-password: changeit
+      keyStoreType: PKCS12
+      key-password: changeit
+      keyAlias: tomcat
+
+---
+
+spring:
+  profiles: cloud
+  data:
+    mongodb.host: ${vcap.services.mongodb.credentials.host}
+    mongodb.port: ${vcap.services.mongodb.credentials.port}
+    mongodb.uri: ${vcap.services.mongodb.credentials.uri}
+eureka:
+  instance:
+    nonSecurePort: 80
+    hostname: ${vcap.services.eureka.credentials.host}
+  client:
+    service-url:
+      defaultZone: ${vcap.services.eureka.credentials.url}
 camel:
     configFilePath: camel/camel-binding-config.xml
