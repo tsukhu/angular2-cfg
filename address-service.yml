@@ -91,7 +91,7 @@ camel:
 ---
 
 spring:
-  profiles: standalone
+  profiles: dev
   data:
     mongodb.host: localhost
     mongodb.port: 27017
